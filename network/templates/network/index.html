@@ -1,5 +1,25 @@
 {% extends "network/layout.html" %}
 
 {% block body %}
-    TODO
+    {% if user.is_authenticated %}    
+    <form id="post_form" action="{%url "add_post"%}" method="post" >
+        {% csrf_token %}
+        <label for="post_value">New Post</label>
+        <textarea id="post_value" name="post" rows="3" cols="50"></textarea>
+        <input type="submit" class="btn btn-primary" value="Post"/>
+        {%if message%}
+        <div id="error">{{message}}</div>
+        {%endif%}
+    </form>
+    {%endif%}
+    {%if posts%}
+        {%for post in posts%}
+        <div class="post_container">
+            <p>{{post.author}}</p>
+            <p>{{post.text}}</p>
+            <p>{{post.date}}</p>            
+            <p>Comment</p>
+        <div>
+        {%endfor%}
+    {%endif%}
 {% endblock %}

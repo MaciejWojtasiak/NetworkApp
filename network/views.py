@@ -4,7 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User, Post
+from .models import User, Post, Like
 
 
 def index(request):
@@ -76,3 +76,19 @@ def add_post(request):
     else:
         return render(request, "network/index.html", {message:"Error, try again."})
    
+def user(request,id):
+    if(User.objects.get(pk=id)):
+        user = User.objects.get(pk=id)        
+        try:
+            posts = Post.objects.filter(author = user)
+        except Post.DoesNotExist:
+            posts = None
+
+        return render(request, "network/user.html", {
+            "user":user,
+            "posts":posts
+        })
+    else:
+        print('no user')
+
+    return index(request)

@@ -2,6 +2,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 class User(AbstractUser):
+    following = models.ManyToManyField("self", blank=True, related_name="followers", symmetrical=False)
     pass
 
 class Post(models.Model):
@@ -14,7 +15,7 @@ class Post(models.Model):
 
 class Like(models.Model):
     post = models.ManyToManyField(Post, blank=True)
-    user = models.ManyToManyField(User, blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
         return f"Like {self.user} on {self.post}"

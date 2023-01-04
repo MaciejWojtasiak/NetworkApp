@@ -7,9 +7,22 @@ from django.urls import reverse
 from .models import User, Post, Like
 
 
+def get_liked_posts(posts,user):
+    liked_posts = []
+    for post in posts:
+        for p in post.LikedPost.all():
+            for user in p.user.all():
+                if(user == user):
+                    liked_posts.append(post)
+    return liked_posts
+
+
 def index(request):
-    posts = Post.objects.all()
-    return render(request, "network/index.html", {"posts": posts})
+    posts = Post.objects.all().order_by('-date')
+    liked_posts = get_liked_posts(posts,request.user)
+    
+
+    return render(request, "network/index.html", {"posts": posts, "liked_posts": liked_posts})
 
 
 def login_view(request):
@@ -65,22 +78,19 @@ def register(request):
 
 
 def add_post(request):
-    if request.method == "POST":
-        post = request.POST["post"]
-        userID = request.user.id
-        user = User.objects.get(id=userID)        
-        newPost = Post.objects.create(text=post,author=user)
+    if request.method == "POST":                
+        newPost = Post.objects.create(text=request.POST["post"],author=request.user)
         newPost.save()
        
         return HttpResponseRedirect(reverse("index"))
-    else:
-        return render(request, "network/index.html", {message:"Error, try again."})
+    
+    return HttpResponse("Error: This page only accept POST requests.")
    
 def user(request,id):
     if(User.objects.get(pk=id)):
         user = User.objects.get(pk=id)        
         try:
-            posts = Post.objects.filter(author = user)
+            posts = Post.objects.filter(author = user)     
         except Post.DoesNotExist:
             posts = None
 
@@ -92,3 +102,16 @@ def user(request,id):
         print('no user')
 
     return index(request)
+
+def like(request, id):
+    # if request.method == "POST":        
+    #     post = Post.objects.get(pk = id)    
+    #     like = Like.objects.create(post=post,user=user)
+    #     post.likesNumber = post.likesNumber + 1
+    #     post.save()
+    #     like.save()
+        
+    #     return HttpResponseRedirect(reverse("index")) 
+    # else: 
+    #     return index(request)
+    pass

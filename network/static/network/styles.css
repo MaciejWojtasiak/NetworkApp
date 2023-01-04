@@ -33,10 +33,14 @@ margin:1rem;
 }
 
 .like {
-    color: #000;
+   background-color: transparent;
+   border: none;
+}
+.like:focus{
+    outline: none;
 }
 
-.like:hover {
-    color: #000;
-    text-decoration: none;
+.like img {
+    width: 20px;
+    height: 20px;
 }

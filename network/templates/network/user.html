@@ -2,20 +2,18 @@
 
 {% block body %}
     <div id="profile_stats">
-        <p>Followers: {{following}}</p>
-        <p>Following: {{following}}</p>
-
+        
     </div>
     {%if posts %}
         {%for post in posts%}
-        <div class="post_container">            
+        <div id="{{post.id}}" class="post_container">            
         <p class="post_author">{{post.author}}</p>
         {%if post.author == user%}
         <a href="#">Edit</a>
         {%endif%}
         <p class="post_text">{{post.text}}</p>
         <p class="post_date">{{post.date}}</p>   
-        <a class="like" href="#"><img src="static/network/heart.svg"></img>0</a>        
+        <a class="like" href="#"><img src="../static/network/heart.svg"></img>{{post.likesNumber}}</a>        
         <p class="post_comment">Comment</p>
     </div>
         {%endfor%}

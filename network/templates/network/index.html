@@ -14,14 +14,17 @@
     {%endif%}
     {%if posts%}
         {%for post in posts%}
-        <div class="post_container">            
+        <div id="{{post.id}}" class="post_container">            
             <p class="post_author">{{post.author}}</p>
             {%if post.author == user%}
             <a href="#">Edit</a>
             {%endif%}
             <p class="post_text">{{post.text}}</p>
-            <p class="post_date">{{post.date}}</p>   
-            <a class="like" href="#"><img src="static/network/heart.svg"></img>0</a>        
+            <p class="post_date">{{post.date}}</p> 
+            <form action="{%url 'like' post.id%}" method="post">
+                {% csrf_token %}
+                <button class="like" type="submit"><img src="{%if post in liked_posts %}../static/network/heart_liked.svg {%else%}../static/network/heart.svg{%endif%}"></img>{{post.likesNumber}}</button>
+            </form> 
             <p class="post_comment">Comment</p>
         </div>
         {%endfor%}

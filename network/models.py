@@ -11,7 +11,7 @@ class Post(models.Model):
     likesNumber = models.IntegerField(default=0)  
 
     def __str__(self):
-        return f"{self.author} {self.text}"    
+        return f"post {self.id} made by {self.author} on {self.date.strftime('%d:%m:%Y %H:%M:%S')}"    
 
 class Like(models.Model):
     post = models.ForeignKey(Post,on_delete=models.CASCADE, related_name="LikedPost")

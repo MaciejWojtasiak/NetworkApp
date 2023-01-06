@@ -3,6 +3,7 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+from django.core.paginator import Paginator
 
 from .models import User, Post, Like
 
@@ -21,8 +22,16 @@ def index(request):
     posts = Post.objects.all().order_by('-date')
     liked_posts = get_liked_posts(posts,request.user)
     
+    paginator = Paginator(posts, 5)
+    page_number = request.GET.get('page')
+    posts_of_the_page = paginator.get_page(page_number)
 
-    return render(request, "network/index.html", {"posts": posts, "liked_posts": liked_posts})
+
+    return render(request, "network/index.html", {
+        "posts": posts, 
+        "liked_posts": liked_posts,
+        "posts_of_the_page":posts_of_the_page
+        })
 
 
 def login_view(request):

@@ -1,9 +1,12 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.core.paginator import Paginator
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
+import json
 
 from .models import User, Post, Like, Follow
 
@@ -145,3 +148,18 @@ def unfollow(request, id):
         return HttpResponseRedirect(reverse("index"))
 
     return HttpResponse("Error: This page only accept POST requests.")
+
+@csrf_exempt
+@login_required
+def edit(request,post_id):
+    
+    # Composing a edit must be via POST
+    if request.method != "POST":
+        return JsonResponse({"error": "POST request required."}, status=400)
+
+    data = json.loads(request.body)
+    post = Post.objects.get(pk = post_id)
+    post.text = data
+    post.save()    
+
+    return JsonResponse({"message": "Post edited successfully."}, status=201)

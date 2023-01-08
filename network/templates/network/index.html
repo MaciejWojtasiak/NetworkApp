@@ -11,17 +11,13 @@
         <div id="error">{{message}}</div>
         {%endif%}
     </form>
-    {%endif%}
-    {%for post in liked_posts%}
-    {{post}}
-    {%endfor%}
+    {%endif%}    
     {%if posts%}
         {%for post in posts_of_the_page%}
-        {{post}}
-        <div id="{{post.id}}" class="post_container">            
+        <div id="post-{{post.id}}" class="post_container">            
             <a class="user_link" href="{%url 'user' post.author.id%}"><p class="post_author">{{post.author}}</p></a>
             {%if post.author == user%}
-            <a href="#">Edit</a>
+                <button data-id="{{post.id}}" id="editBtn_{{post.id}}" class="btn btn-info editBtn">Edit</button>
             {%endif%}
             <p class="post_text">{{post.text}}</p>
             <p class="post_date">{{post.date}}</p> 
@@ -44,4 +40,5 @@
         {%endif%}
         </ul>
       </nav>
+      <script src="../static/network/edit.js"></script>
 {% endblock %}

@@ -5,31 +5,18 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.core.paginator import Paginator
 
-from .models import User, Post, Like
-
-
-def get_liked_posts(posts,user):
-    liked_posts = []
-    for post in posts:
-        for p in post.LikedPost.all():
-            for user in p.user.all():
-                if(user == user):
-                    liked_posts.append(post)
-    return liked_posts
+from .models import User, Post, Like, Follow
 
 
 def index(request):
-    posts = Post.objects.all().order_by('-date')
-    liked_posts = get_liked_posts(posts,request.user)
+    posts = Post.objects.all().order_by('-date')    
     
     paginator = Paginator(posts, 5)
     page_number = request.GET.get('page')
-    posts_of_the_page = paginator.get_page(page_number)
-
+    posts_of_the_page = paginator.get_page(page_number)    
 
     return render(request, "network/index.html", {
-        "posts": posts, 
-        "liked_posts": liked_posts,
+        "posts": posts,         
         "posts_of_the_page":posts_of_the_page
         })
 
@@ -95,22 +82,36 @@ def add_post(request):
     
     return HttpResponse("Error: This page only accept POST requests.")
    
-def user(request,id):
-    if(User.objects.get(pk=id)):
+def user(request,id):  
+   
         user = User.objects.get(pk=id)        
+        posts = Post.objects.filter(author = user)   
+        
+        following = Follow.objects.filter(user=user)
+        followers = Follow.objects.filter(user_follower=user)  
+          
+        #paginator
+        paginator = Paginator(posts, 5)
+        page_number = request.GET.get('page')
+        posts_of_the_page = paginator.get_page(page_number)  
+
         try:
-            posts = Post.objects.filter(author = user)     
-        except Post.DoesNotExist:
-            posts = None
-
+            checkFollow = followers.filter(user = User.objects.get(pk = request.user.id))                     
+            if len(checkFollow) != 0:
+                isFollowing = False
+            else:
+                isFollowing = True            
+        except:
+            isFollowing = False
+       
         return render(request, "network/user.html", {
-            "user":user,
-            "posts":posts
-        })
-    else:
-        print('no user')
-
-    return index(request)
+            "username":user.username,
+            "posts":posts_of_the_page,
+            "following":following,
+            "followers":followers,
+            "user_profile": user,
+            "isFollowing":isFollowing
+        })    
 
 def like(request, id):
     # if request.method == "POST":        
@@ -124,3 +125,23 @@ def like(request, id):
     # else: 
     #     return index(request)
     pass
+
+def follow(request, id):
+    if request.method == "POST":
+        if(id != request.user.id):
+            user_to_follow = User.objects.get(pk = id)
+            follow = Follow.objects.create(user = request.user, user_follower = user_to_follow)
+            follow.save()
+
+        return HttpResponseRedirect(reverse("index"))
+
+    return HttpResponse("Error: This page only accept POST requests.")
+
+def unfollow(request, id):
+    if request.method == "POST":
+        user_to_unfollow = User.objects.get(pk = id)
+        Follow.objects.filter(user = request.user, user_follower = user_to_unfollow).delete()
+
+        return HttpResponseRedirect(reverse("index"))
+
+    return HttpResponse("Error: This page only accept POST requests.")

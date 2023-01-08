@@ -12,10 +12,14 @@
         {%endif%}
     </form>
     {%endif%}
+    {%for post in liked_posts%}
+    {{post}}
+    {%endfor%}
     {%if posts%}
         {%for post in posts_of_the_page%}
+        {{post}}
         <div id="{{post.id}}" class="post_container">            
-            <p class="post_author">{{post.author}}</p>
+            <a class="user_link" href="{%url 'user' post.author.id%}"><p class="post_author">{{post.author}}</p></a>
             {%if post.author == user%}
             <a href="#">Edit</a>
             {%endif%}

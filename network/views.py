@@ -129,6 +129,28 @@ def like(request, id):
     #     return index(request)
     pass
 
+def following(request, id):
+    user = User.objects.get(pk = request.user.id)
+    followed_users = Follow.objects.filter(user = user)
+    posts = Post.objects.all()
+
+    following_posts=[]
+
+    for post in posts:
+        for person in followed_users:
+            if person.user_follower == post.author:
+                following_posts.append(post)
+
+    print(following_posts)
+   
+    
+
+    return render(request, "network/following.html", {
+        "username": user,
+        "following_posts":following_posts
+    })
+    
+
 def follow(request, id):
     if request.method == "POST":
         if(id != request.user.id):

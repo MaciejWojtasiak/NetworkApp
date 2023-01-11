@@ -8,6 +8,7 @@ class Post(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     text = models.CharField(max_length=100)
     date = models.DateField(auto_now_add=True) 
+    likes = models.IntegerField(default=0)
 
     def __str__(self):
         return f"post {self.id} made by {self.author} on {self.date.strftime('%d.%m.%Y')}"    

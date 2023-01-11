@@ -10,6 +10,17 @@ import json
 
 from .models import User, Post, Like, Follow
 
+def liked_posts(user):    
+    posts = Post.objects.all().order_by('-date')  
+    liked_posts_arr = []
+    likes = Like.objects.filter(user = user) 
+    
+    for post in posts:
+        for like in likes:
+            if(post == like.post):
+                liked_posts_arr.append(post)
+
+    return liked_posts_arr
 
 def index(request):
     posts = Post.objects.all().order_by('-date')    
@@ -17,19 +28,14 @@ def index(request):
     paginator = Paginator(posts, 5)
     page_number = request.GET.get('page')
     posts_of_the_page = paginator.get_page(page_number)   
-
-    liked_posts = []
-    likes = Like.objects.filter(user = request.user) 
-    
-    for post in posts:
-        for like in likes:
-            if(post == like.post):
-                liked_posts.append(post)
+    liked_posts_arr = []    
+    if request.user.is_authenticated:
+        liked_posts_arr = liked_posts(request.user)
 
     return render(request, "network/index.html", {
         "posts": posts,         
         "posts_of_the_page":posts_of_the_page,
-        "liked_posts": liked_posts
+        "liked_posts": liked_posts_arr
         })
 
 
@@ -94,8 +100,7 @@ def add_post(request):
     
     return HttpResponse("Error: This page only accept POST requests.")
    
-def user(request,id):  
-   
+def user(request,id):     
         user = User.objects.get(pk=id)        
         posts = Post.objects.filter(author = user)   
         
@@ -106,6 +111,9 @@ def user(request,id):
         paginator = Paginator(posts, 5)
         page_number = request.GET.get('page')
         posts_of_the_page = paginator.get_page(page_number)  
+
+        #liked postst
+        liked_posts_arr = liked_posts(request.user)        
 
         try:
             checkFollow = followers.filter(user = User.objects.get(pk = request.user.id))                     
@@ -122,13 +130,17 @@ def user(request,id):
             "following":following,
             "followers":followers,
             "user_profile": user,
-            "isFollowing":isFollowing
+            "isFollowing":isFollowing,
+            "liked_posts":liked_posts_arr
         })    
 
 def following(request, id):
     user = User.objects.get(pk = request.user.id)
     followed_users = Follow.objects.filter(user = user)
     posts = Post.objects.all()
+
+    #liked postst
+    liked_posts_arr = liked_posts(request.user) 
 
     following_posts=[]
 
@@ -140,7 +152,8 @@ def following(request, id):
 
     return render(request, "network/following.html", {
         "username": user,
-        "following_posts":following_posts
+        "following_posts":following_posts,
+        "liked_posts":liked_posts_arr
     })
     
 
@@ -184,7 +197,9 @@ def like(request, post_id):
     user = request.user
     post = Post.objects.get(pk = post_id)
     like = Like.objects.create(user = user, post = post)
+    post.likes = post.likes + 1
     like.save()
+    post.save()
     return JsonResponse({"message": "Like saved successfully."}, status=201)
 
     
@@ -192,5 +207,7 @@ def unlike(request, post_id):
     user = request.user
     post = Post.objects.get(pk = post_id)
     like = Like.objects.filter(user = user, post = post)
+    post.likes = post.likes - 1
     like.delete()
+    post.save()
     return JsonResponse({"message": "Post unliked successfully."}, status=201)

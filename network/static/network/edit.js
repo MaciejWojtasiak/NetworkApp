@@ -9,7 +9,8 @@ function editPost() {
     this.disabled = "true";
     const postID = this.getAttribute('data-id');
     const post_text = document.querySelector(`#post-${postID} .post_text`);
-    post_text.innerHTML = `<br/><textarea class="edit-area"></textarea>`;
+    const postValue = post_text.innerText;
+    post_text.innerHTML = `<br/><textarea class="edit-area">${postValue}</textarea>`;
     const saveBtn = document.createElement("button");
     saveBtn.id = `${postID}`;
     saveBtn.classList.add('btn');

@@ -21,7 +21,7 @@
             {%endif%}
             <p class="post_text">{{post.text}}</p>
             <p class="post_date">{{post.date}}</p>              
-            <button id="{{post.id}}" class = "likeBtn fa-heart {% if post in liked_posts%}fa-solid{%else%}fa-regular{%endif%}"></button>
+            <button id="{{post.id}}" class = "likeBtn fa-heart {% if post in liked_posts%}fa-solid{%else%}fa-regular{%endif%}"> {{post.likes}}</button>
             <p class="post_comment">Comment</p>
         </div>
         {%endfor%}
@@ -37,6 +37,5 @@
         {%endif%}
         </ul>
       </nav>
-      <script src="../static/network/edit.js"></script>
-      <script src="../static/network/likePost.js"></script>
+      <script src="../static/network/edit.js"></script>      
 {% endblock %}

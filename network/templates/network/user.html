@@ -25,18 +25,18 @@
         </div>        
         
     </div>  
-    {%if posts %}
+    {%if posts%}
         {%for post in posts%}
-        <div id="{{post.id}}" class="post_container">            
-        <p class="post_author">{{post.author}}</p>
-        {%if post.author == user%}
-        <a href="#">Edit</a>
-        {%endif%}
-        <p class="post_text">{{post.text}}</p>
-        <p class="post_date">{{post.date}}</p>   
-        <a class="like" href="#"><img src="../static/network/heart.svg"></img>{{post.likesNumber}}</a>        
-        <p class="post_comment">Comment</p>
-    </div>
+        <div id="post-{{post.id}}" class="post_container">            
+            <a class="user_link" href="{%url 'user' post.author.id%}"><p class="post_author">{{post.author}}</p></a>
+            {%if post.author == user%}
+                <button data-id="{{post.id}}" id="editBtn_{{post.id}}" class="btn btn-info editBtn">Edit</button>
+            {%endif%}
+            <p class="post_text">{{post.text}}</p>
+            <p class="post_date">{{post.date}}</p>              
+            <button id="{{post.id}}" class = "likeBtn fa-heart {% if post in liked_posts%}fa-solid{%else%}fa-regular{%endif%}"> {{post.likes}}</button>
+            <p class="post_comment">Comment</p>
+        </div>
         {%endfor%}
     {%else%}
         <div>No posts yet.</div>
@@ -51,4 +51,5 @@
         {%endif%}
         </ul>
       </nav>
+    
 {% endblock %}

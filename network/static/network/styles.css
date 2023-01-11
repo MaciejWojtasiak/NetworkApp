@@ -32,15 +32,15 @@ margin:1rem;
     color: #a39c9c; 
 }
 
-.like {
+.likeBtn {
    background-color: transparent;
    border: none;
 }
-.like:focus{
+.likeBtn:focus{
     outline: none;
 }
 
-.like img {
+.likeBtn img {
     width: 20px;
     height: 20px;
 }
@@ -58,3 +58,4 @@ margin:1rem;
 .editing-header {
     color: red;
 }
+

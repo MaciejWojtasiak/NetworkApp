@@ -16,11 +16,20 @@ def index(request):
     
     paginator = Paginator(posts, 5)
     page_number = request.GET.get('page')
-    posts_of_the_page = paginator.get_page(page_number)    
+    posts_of_the_page = paginator.get_page(page_number)   
+
+    liked_posts = []
+    likes = Like.objects.filter(user = request.user) 
+    
+    for post in posts:
+        for like in likes:
+            if(post == like.post):
+                liked_posts.append(post)
 
     return render(request, "network/index.html", {
         "posts": posts,         
-        "posts_of_the_page":posts_of_the_page
+        "posts_of_the_page":posts_of_the_page,
+        "liked_posts": liked_posts
         })
 
 
@@ -116,19 +125,6 @@ def user(request,id):
             "isFollowing":isFollowing
         })    
 
-def like(request, id):
-    # if request.method == "POST":        
-    #     post = Post.objects.get(pk = id)    
-    #     like = Like.objects.create(post=post,user=user)
-    #     post.likesNumber = post.likesNumber + 1
-    #     post.save()
-    #     like.save()
-        
-    #     return HttpResponseRedirect(reverse("index")) 
-    # else: 
-    #     return index(request)
-    pass
-
 def following(request, id):
     user = User.objects.get(pk = request.user.id)
     followed_users = Follow.objects.filter(user = user)
@@ -139,10 +135,7 @@ def following(request, id):
     for post in posts:
         for person in followed_users:
             if person.user_follower == post.author:
-                following_posts.append(post)
-
-    print(following_posts)
-   
+                following_posts.append(post)  
     
 
     return render(request, "network/following.html", {
@@ -185,3 +178,19 @@ def edit(request,post_id):
     post.save()    
 
     return JsonResponse({"message": "Post edited successfully."}, status=201)
+
+
+def like(request, post_id):
+    user = request.user
+    post = Post.objects.get(pk = post_id)
+    like = Like.objects.create(user = user, post = post)
+    like.save()
+    return JsonResponse({"message": "Like saved successfully."}, status=201)
+
+    
+def unlike(request, post_id):
+    user = request.user
+    post = Post.objects.get(pk = post_id)
+    like = Like.objects.filter(user = user, post = post)
+    like.delete()
+    return JsonResponse({"message": "Post unliked successfully."}, status=201)

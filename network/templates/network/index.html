@@ -11,7 +11,7 @@
         <div id="error">{{message}}</div>
         {%endif%}
     </form>
-    {%endif%}    
+    {%endif%}          
     {%if posts%}
         {%for post in posts_of_the_page%}
         <div id="post-{{post.id}}" class="post_container">            
@@ -20,11 +20,8 @@
                 <button data-id="{{post.id}}" id="editBtn_{{post.id}}" class="btn btn-info editBtn">Edit</button>
             {%endif%}
             <p class="post_text">{{post.text}}</p>
-            <p class="post_date">{{post.date}}</p> 
-            <form action="{%url 'like' post.id%}" method="post">
-                {% csrf_token %}
-                <button class="like" type="submit"><img src="{%if post in liked_posts %}../static/network/heart_liked.svg {%else%}../static/network/heart.svg{%endif%}"></img>{{post.likesNumber}}</button>
-            </form> 
+            <p class="post_date">{{post.date}}</p>              
+            <button id="{{post.id}}" class = "likeBtn fa-heart {% if post in liked_posts%}fa-solid{%else%}fa-regular{%endif%}"></button>
             <p class="post_comment">Comment</p>
         </div>
         {%endfor%}
@@ -41,4 +38,5 @@
         </ul>
       </nav>
       <script src="../static/network/edit.js"></script>
+      <script src="../static/network/likePost.js"></script>
 {% endblock %}
